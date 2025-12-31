@@ -10,8 +10,7 @@ cmake --build build
 ctest --test-dir build
 ```
 
-## »ли удобнее:
+## «апуск CLI
 ```bash
-cmake --build build --target check
-
+.\build\solution\ops_app.exe <необ€зательный целочисленный аргумент - количество заказов>
 ```

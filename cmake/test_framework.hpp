@@ -57,23 +57,30 @@ namespace ops_test {
         throw Failure(os.str());
     }
 
+    // Two-step macro expansion for MSVC-compatible token pasting
+#define OPS_TEST_CONCAT_IMPL(a, b) a##b
+#define OPS_TEST_CONCAT(a, b) OPS_TEST_CONCAT_IMPL(a, b)
+
 #define OPS_TEST(name_literal)                                                     \
-  static void ops_test_fn_##__LINE__();                                            \
-  namespace {                                                                      \
-  struct ops_test_reg_##__LINE__ {                                                 \
-    ops_test_reg_##__LINE__() { ops_test::register_test((name_literal), &ops_test_fn_##__LINE__); } \
-  } ops_test_reg_instance_##__LINE__;                                              \
-  }                                                                                \
-  static void ops_test_fn_##__LINE__()
+    static void OPS_TEST_CONCAT(ops_test_fn_, __LINE__)();                         \
+    namespace {                                                                    \
+    struct OPS_TEST_CONCAT(ops_test_reg_, __LINE__) {                              \
+        OPS_TEST_CONCAT(ops_test_reg_, __LINE__)() {                               \
+            ::ops_test::register_test((name_literal),                              \
+                &OPS_TEST_CONCAT(ops_test_fn_, __LINE__));                         \
+        }                                                                          \
+    } OPS_TEST_CONCAT(ops_test_reg_instance_, __LINE__);                           \
+    }                                                                              \
+    static void OPS_TEST_CONCAT(ops_test_fn_, __LINE__)()
 
 #define OPS_REQUIRE(cond) \
-  ::ops_test::require_impl((cond), #cond, __FILE__, __LINE__, "")
+    ::ops_test::require_impl((cond), #cond, __FILE__, __LINE__, "")
 
 #define OPS_REQUIRE_MSG(cond, message_literal) \
-  ::ops_test::require_impl((cond), #cond, __FILE__, __LINE__, (message_literal))
+    ::ops_test::require_impl((cond), #cond, __FILE__, __LINE__, (message_literal))
 
 #define OPS_FAIL(message_literal) \
-  ::ops_test::fail_impl(__FILE__, __LINE__, (message_literal))
+    ::ops_test::fail_impl(__FILE__, __LINE__, (message_literal))
 
     inline int run_all() {
         const auto& tests = registry();

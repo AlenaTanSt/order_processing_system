@@ -3,7 +3,6 @@ target_include_directories(ops_solution PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/incl
 
 target_sources(ops_solution PRIVATE
   src/pipeline.cpp
-  src/metrics.cpp
   # Add new *.cpp files here as the stage grows
 )
 
