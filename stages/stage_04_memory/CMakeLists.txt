@@ -9,5 +9,10 @@ include(warnings)
 include(sanitizer_options)
 include(testing)
 
+find_package(Threads REQUIRED)
+
+add_library(stage_threads INTERFACE)
+target_link_libraries(stage_threads INTERFACE Threads::Threads)
+
 add_subdirectory(solution)
 add_subdirectory(tests)

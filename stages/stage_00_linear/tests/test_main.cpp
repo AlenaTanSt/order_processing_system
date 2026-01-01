@@ -7,7 +7,7 @@
 #include "ops/order.hpp"
 #include "ops/metrics.hpp"
 
-OPS_TEST("Пустой конвейер: process_all не меняет метрики") {
+OPS_TEST("Empty pipeline: process_all does not change metrics") {
     Pipeline pipeline;
 
     pipeline.process_all();
@@ -19,7 +19,7 @@ OPS_TEST("Пустой конвейер: process_all не меняет метрики") {
     OPS_REQUIRE(std::chrono::steady_clock::duration::zero() == m.total_processing_time);
 }
 
-OPS_TEST("Submit увеличивает accepted_count") {
+OPS_TEST("Submit increases accepted_count") {
     Pipeline pipeline;
 
     pipeline.submit(Order{ 1 });
@@ -32,7 +32,7 @@ OPS_TEST("Submit увеличивает accepted_count") {
     OPS_REQUIRE(m.delivered_count == 0);
 }
 
-OPS_TEST("Линейная обработка: все заказы доставлены и метрики корректны") {
+OPS_TEST("Linear processing: all orders are delivered and metrics are correct") {
     Pipeline pipeline;
 
     for (std::uint64_t id = 1; id <= 5; ++id) {
@@ -49,7 +49,7 @@ OPS_TEST("Линейная обработка: все заказы доставлены и метрики корректны") {
     OPS_REQUIRE(m.total_processing_time >= std::chrono::steady_clock::duration::zero());
 }
 
-OPS_TEST("Порядок сохраняется: delivered_orders идут в том же порядке id") {
+OPS_TEST("The order is preserved: delivered_orders go in the same id order") {
     Pipeline pipeline;
 
     pipeline.submit(Order{ 10 });
@@ -68,7 +68,7 @@ OPS_TEST("Порядок сохраняется: delivered_orders идут в том же порядке id") {
     OPS_REQUIRE(delivered[3].id == 13);
 }
 
-OPS_TEST("Статусы и временные метки: Delivered установлен, таймстемпы монотонны") {
+OPS_TEST("Statuses and timestamps: Delivered is set, timestamps are monotonous") {
     Pipeline pipeline;
 
     pipeline.submit(Order{ 1 });
@@ -90,7 +90,7 @@ OPS_TEST("Статусы и временные метки: Delivered установлен, таймстемпы монотонны"
     }
 }
 
-OPS_TEST("total_processing_time равен сумме по заказам (delivered_time - accepted_time)") {
+OPS_TEST("total_processing_time is equal to the sum of orders (delivered_time - accepted_time)") {
     Pipeline pipeline;
 
     pipeline.submit(Order{ 100 });
@@ -111,7 +111,7 @@ OPS_TEST("total_processing_time равен сумме по заказам (delivered_time - accepte
     OPS_REQUIRE(m.total_processing_time == expected);
 }
 
-OPS_TEST("Повторный вызов process_all без новых заказов не меняет результат") {
+OPS_TEST("Calling process_all again without new orders does not change the result.") {
     Pipeline pipeline;
 
     pipeline.submit(Order{ 1 });

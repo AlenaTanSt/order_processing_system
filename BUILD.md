@@ -7,7 +7,12 @@ cmake --build build
 
 ### Запуск тестов
 ```bash
-ctest --test-dir build
+ctest --test-dir build --verbose
+```
+
+### Если тесты падают, но нет информации об упавшем тесте
+```
+.\build\tests\ops_tests.exe
 ```
 
 ## Запуск CLI

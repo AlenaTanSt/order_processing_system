@@ -2,7 +2,12 @@ add_executable(ops_tests
   test_main.cpp
 )
 
-target_link_libraries(ops_tests PRIVATE ops_solution)
+target_link_libraries(ops_tests PRIVATE
+  ops_solution
+  stage_threads
+)
+
+target_compile_definitions(ops_tests PRIVATE OPS_TESTING)
 
 target_apply_warnings(ops_tests)
 target_enable_sanitizers(ops_tests)
