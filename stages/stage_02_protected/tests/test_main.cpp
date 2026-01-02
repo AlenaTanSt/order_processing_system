@@ -16,7 +16,6 @@ static Order MakeOrder(OrderId v) {
     return Order(v);
 }
 
-
 OPS_TEST("BlockingQueue: push/pop in single thread") {
     BlockingQueue<int> q;
 
@@ -260,6 +259,7 @@ OPS_TEST("Pipeline: delivered order matches submission order by id") {
     }
 }
 
+#ifdef OPS_TESTING
 OPS_TEST("Pipeline: uses at least two different threads when N>=2 (via last_worker)") {
     Pipeline p;
 
@@ -282,6 +282,7 @@ OPS_TEST("Pipeline: uses at least two different threads when N>=2 (via last_work
 
     OPS_REQUIRE_MSG(threads.size() >= 2, "expected at least 2 unique worker thread ids");
 }
+#endif
 
 OPS_TEST("Pipeline: metrics are cumulative across multiple process_all calls") {
     Pipeline p;
