@@ -57,7 +57,6 @@ namespace ops_test {
         throw Failure(os.str());
     }
 
-    // Two-step macro expansion for MSVC-compatible token pasting
 #define OPS_TEST_CONCAT_IMPL(a, b) a##b
 #define OPS_TEST_CONCAT(a, b) OPS_TEST_CONCAT_IMPL(a, b)
 
@@ -82,12 +81,66 @@ namespace ops_test {
 #define OPS_FAIL(message_literal) \
     ::ops_test::fail_impl(__FILE__, __LINE__, (message_literal))
 
-    inline int run_all() {
+    inline bool contains_substr(const std::string& s, const std::string& sub) {
+        return s.find(sub) != std::string::npos;
+    }
+
+    inline int run(int argc, char** argv) {
         const auto& tests = registry();
-        std::cout << "Running " << tests.size() << " tests\n";
+
+        bool list_only = false;
+        std::string filter;
+
+        for (int i = 1; i < argc; ++i) {
+            const std::string arg = argv[i] ? std::string(argv[i]) : std::string();
+
+            if (arg == "--list") {
+                list_only = true;
+                continue;
+            }
+
+            const std::string pref = "--filter=";
+            if (arg.rfind(pref, 0) == 0) {
+                filter = arg.substr(pref.size());
+                continue;
+            }
+
+            if (arg == "--filter") {
+                if (i + 1 >= argc) {
+                    std::cout << "FAIL: --filter requires a value\n";
+                    return 2;
+                }
+                filter = argv[++i];
+                continue;
+            }
+        }
+
+        if (list_only) {
+            for (const auto& t : tests) {
+                std::cout << t.name << "\n";
+            }
+            return 0;
+        }
+
+        std::vector<const TestCase*> selected;
+        selected.reserve(tests.size());
+
+        if (filter.empty()) {
+            for (const auto& t : tests) selected.push_back(&t);
+        }
+        else {
+            for (const auto& t : tests) {
+                if (contains_substr(t.name, filter)) selected.push_back(&t);
+            }
+        }
+
+        std::cout << "Running " << selected.size() << " tests";
+        if (!filter.empty()) std::cout << " (filter=\"" << filter << "\")";
+        std::cout << "\n";
 
         int failed = 0;
-        for (const auto& t : tests) {
+        for (const auto* tp : selected) {
+            const auto& t = *tp;
             try {
                 t.fn();
                 std::cout << "\"" << t.name << "\" - OK\n";
@@ -111,8 +164,12 @@ namespace ops_test {
             return 0;
         }
 
-        std::cout << "FAILED: " << failed << " of " << tests.size() << "\n";
+        std::cout << "FAILED: " << failed << " of " << selected.size() << "\n";
         return 1;
+    }
+
+    inline int run_all() {
+        return run(1, nullptr);
     }
 
 } // namespace ops_test

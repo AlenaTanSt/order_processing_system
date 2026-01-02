@@ -7,7 +7,7 @@ cmake --build build
 
 ### Запуск тестов
 ```bash
-ctest --test-dir build --verbose
+ctest --test-dir build --output-on-failure --verbose
 ```
 
 ### Если тесты падают, но нет информации об упавшем тесте

@@ -1,6 +1,6 @@
 #include "test_framework.hpp"
 
-#include <ops/queue.hpp>
+#include <ops/blocking_queue.hpp>
 #include <ops/order.hpp>
 #include <ops/pipeline.hpp>
 
@@ -93,7 +93,7 @@ OPS_TEST("BlockingQueue: multiple consumers drain all items exactly once") {
 }
 
 OPS_TEST("BlockingQueue: close wakes all waiting consumers (no hang)") {
-    ops::BlockingQueue<int> q;
+    BlockingQueue<int> q;
 
     std::optional<int> r1, r2, r3, r4;
 
@@ -256,11 +256,10 @@ OPS_TEST("Pipeline: delivered order matches submission order by id") {
     OPS_REQUIRE(out.size() == static_cast<std::size_t>(N));
 
     for (int i = 0; i < N; ++i) {
-        OPS_REQUIRE(out[static_cast<std::size_t>(i)].id == OrderId{ i });
+        OPS_REQUIRE(out[static_cast<std::size_t>(i)].id == OrderId{ static_cast<std::size_t>(i) });
     }
 }
 
-#ifdef OPS_TESTING
 OPS_TEST("Pipeline: uses at least two different threads when N>=2 (via last_worker)") {
     Pipeline p;
 
@@ -283,7 +282,6 @@ OPS_TEST("Pipeline: uses at least two different threads when N>=2 (via last_work
 
     OPS_REQUIRE_MSG(threads.size() >= 2, "expected at least 2 unique worker thread ids");
 }
-#endif
 
 OPS_TEST("Pipeline: metrics are cumulative across multiple process_all calls") {
     Pipeline p;
@@ -334,11 +332,11 @@ OPS_TEST("Pipeline: stability stress - many small batches") {
     const auto& out = p.delivered_orders();
     OPS_REQUIRE(out.size() == static_cast<std::size_t>(total));
     for (int i = 0; i < total; ++i) {
-        OPS_REQUIRE(out[static_cast<std::size_t>(i)].id == OrderId{ i });
+        OPS_REQUIRE(out[static_cast<std::size_t>(i)].id == OrderId{ static_cast<std::size_t>(i) });
         OPS_REQUIRE(out[static_cast<std::size_t>(i)].status == OrderStatus::Delivered);
     }
 }
 
-int main() {
-    return ops_test::run_all();
+int main(int argc, char** argv) {
+    return ops_test::run(argc, argv);
 }

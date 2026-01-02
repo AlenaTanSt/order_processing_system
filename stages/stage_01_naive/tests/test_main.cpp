@@ -199,6 +199,6 @@ OPS_TEST("threads: for N >= 2, delivered orders contain at least 2 unique worker
 }
 #endif
 
-int main() {
-    return ops_test::run_all();
+int main(int argc, char** argv) {
+    return ops_test::run(argc, argv);
 }

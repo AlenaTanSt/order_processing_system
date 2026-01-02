@@ -135,6 +135,6 @@ OPS_TEST("Calling process_all again without new orders does not change the resul
     OPS_REQUIRE(first_delivered_size == second_delivered_size);
 }
 
-int main() {
-    return ops_test::run_all();
+int main(int argc, char** argv) {
+    return ops_test::run(argc, argv);
 }
